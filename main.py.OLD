@@ -1,0 +1,59 @@
+# main.py
+import os
+from file_processor import extract_text_from_files, get_supported_files
+from vector_store import split_text, create_vector_store
+from qa_system import setup_qa_chain
+from config import SUPPORTED_EXTENSIONS
+from config import SUPPORTED_EXTENSIONS, LLM_MODEL
+
+def main():
+    # Load all supported files from a folder automatically
+    pdf_folder = r"C:\Users\Admin\my_pdfs"
+    
+    # Get all supported file types
+    file_paths = get_supported_files(pdf_folder)
+    
+    if not file_paths:
+        print("❌ No supported files found in the specified folder!")
+        print(f"Supported formats: {SUPPORTED_EXTENSIONS}")
+        return
+    
+    print(f"Found {len(file_paths)} files: {[os.path.basename(p) for p in file_paths]}")
+    
+    #print("Using LLM model " + os.getenv(LLM_MODEL))
+    print("Using LLM model " + LLM_MODEL)
+    print("📖 Extracting text from files...")
+    text = extract_text_from_files(file_paths)
+    
+    if not text.strip():
+        print("❌ No extractable text found in any files!")
+        return
+    
+    print(f"✅ Extracted {len(text)} characters")
+
+    print("🔪 Splitting text into chunks...")
+    docs = split_text(text)
+    print(f"✅ Created {len(docs)} text chunks")
+
+    print("🧠 Creating vector store...")
+    vector_store = create_vector_store(docs)
+
+    print("✅ Ready! Ask questions about ALL your documents (type 'quit' to exit)")
+
+    qa_chain = setup_qa_chain(vector_store)
+
+    while True:
+        question = input("\n❓ Your question: ").strip()
+        if question.lower() == "quit":
+            break
+
+        result = qa_chain.invoke({"query": question})
+        print("\n📘 Answer:", result["result"])
+        # Uncomment to see sources:
+        # print("\n🔍 Source chunks used:")
+        # for i, doc in enumerate(result["source_documents"]):
+        #     print(f"--- Source {i+1} ---")
+        #     print(doc.page_content[:300] + "...")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,7 @@
+rag_system/
+├── main.py                 # Main application (now our web app)
+├── file_processor.py       # File reading functionality
+├── vector_store.py         # Database operations
+├── qa_system.py           # Question-answering setup
+├── config.py              # Configuration settings
+└── requirements.txt        # New: Dependencies list
