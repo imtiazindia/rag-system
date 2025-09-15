@@ -19,10 +19,10 @@ def create_vector_store(docs):
     """Create vector store with in-memory database"""
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
     
-    # Use in-memory database instead of persistent
+    # Use in-memory database - NO persist_directory parameter
     vector_store = Chroma.from_documents(
         documents=docs, 
-        embedding=embeddings,
-        persist_directory=None  # ← This makes it in-memory
+        embedding=embeddings
+        # REMOVED: persist_directory parameter entirely
     )
     return vector_store
