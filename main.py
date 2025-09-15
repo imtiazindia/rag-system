@@ -6,6 +6,8 @@ from file_processor import extract_text_from_files, get_supported_files
 from vector_store import split_text, create_vector_store
 from qa_system import setup_qa_chain
 from config import SUPPORTED_EXTENSIONS, LLM_MODEL
+from dotenv import load_dotenv
+load_dotenv()  # Loads environment variables from .env file
 
 # Set page configuration
 st.set_page_config(
@@ -144,7 +146,7 @@ def main():
 
 # Footer
 st.markdown("---")
-st.markdown("*Built with Streamlit, LangChain, and Ollama*")
+st.markdown("*Built with Streamlit, LangChain, and OpenAI*")
 
 if __name__ == "__main__":
     main()
