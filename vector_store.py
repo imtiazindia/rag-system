@@ -1,9 +1,10 @@
 # vector_store.py
+# vector_store.py
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.schema import Document
-from config import CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_MODEL, VECTOR_STORE_PATH
+from config import CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_MODEL
 
 def split_text(text):
     """Split text into manageable chunks"""
@@ -16,12 +17,15 @@ def split_text(text):
     return [Document(page_content=chunk) for chunk in chunks]
 
 def create_vector_store(docs):
-    """Create or update vector store with documents"""
+    """Create vector store with in-memory database"""
     embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    vector_store = Chroma.from_documents(docs, embeddings, persist_directory=VECTOR_STORE_PATH)
+    
+    # Use in-memory database instead of persistent
+    vector_store = Chroma.from_documents(
+        documents=docs, 
+        embedding=embeddings,
+        persist_directory=None  # ← This makes it in-memory
+    )
     return vector_store
 
-def load_vector_store():
-    """Load existing vector store"""
-    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-    return Chroma(persist_directory=VECTOR_STORE_PATH, embedding_function=embeddings)
+# Remove the load_vector_store function since we're using in-memory
