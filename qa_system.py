@@ -1,15 +1,19 @@
 # qa_system.py
-from langchain_ollama import OllamaLLM
+import os
+from langchain.llms import OpenAI  # ← Correct import
 from langchain.chains import RetrievalQA
-from config import LLM_MODEL, SEARCH_KWARGS
+from config import LLM_MODEL
 
 def setup_qa_chain(vector_store):
-    """Set up the question-answering system"""
-    llm = OllamaLLM(model=LLM_MODEL)
+    llm = OpenAI(
+        api_key=os.getenv("OPENAI_API_KEY"), 
+        model_name=LLM_MODEL,
+        temperature=0.1
+    )
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
-        retriever=vector_store.as_retriever(search_kwargs=SEARCH_KWARGS),
+        retriever=vector_store.as_retriever(search_kwargs={"k": 3}),
         return_source_documents=True
     )
     return qa_chain
